@@ -1,0 +1,75 @@
+{
+  "entities": {
+    "registration": {
+      "title": "Registration",
+      "description": "Family visit consent registration for Dhenkanal RS Sub Post Office postal agents and accompanying family members",
+      "type": "object",
+      "properties": {
+        "slNo": {
+          "type": "number",
+          "description": "Sequential serial number of the registration"
+        },
+        "applicantName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 150,
+          "description": "Full name of the applicant postal agent"
+        },
+        "gender": {
+          "type": "string",
+          "enum": ["Male", "Female", "Other"],
+          "description": "Gender of the applicant"
+        },
+        "age": {
+          "type": "number",
+          "description": "Age of the applicant in years"
+        },
+        "mobileNumber": {
+          "type": "string",
+          "pattern": "^[6-9][0-9]{9}$",
+          "description": "10-digit Indian mobile number"
+        },
+        "familyMembers": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Formatted summary of accompanying family members with their gender and age"
+        },
+        "familyMembersList": {
+          "type": "array",
+          "description": "Array of accompanying family member objects with name, gender, and age"
+        },
+        "totalPersons": {
+          "type": "number",
+          "description": "Total headcount including applicant and accompanying members"
+        },
+        "submissionTime": {
+          "type": "string",
+          "description": "Formatted date and time string of submission in Indian Standard Time"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last update"
+        }
+      },
+      "required": [
+        "slNo",
+        "applicantName",
+        "gender",
+        "age",
+        "mobileNumber",
+        "totalPersons",
+        "submissionTime"
+      ]
+    }
+  },
+  "firestore": {
+    "/registrations/{registrationId}": {
+      "schema": "registration",
+      "description": "Collection of all submitted family visit consent forms with admin edit and delete support"
+    }
+  }
+}

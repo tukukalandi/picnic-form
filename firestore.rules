@@ -1,0 +1,48 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function isValidRegistration(data) {
+      return data.keys().hasAll(['slNo', 'applicantName', 'gender', 'age', 'mobileNumber', 'totalPersons', 'submissionTime'])
+        && data.applicantName is string 
+        && data.applicantName.size() >= 2 
+        && data.applicantName.size() <= 150
+        && data.gender in ['Male', 'Female', 'Other']
+        && (data.age is number || data.age is int)
+        && data.age >= 1 && data.age <= 120
+        && data.mobileNumber is string
+        && data.mobileNumber.matches('^[6-9][0-9]{9}$')
+        && (data.totalPersons is number || data.totalPersons is int)
+        && data.totalPersons >= 1
+        && data.submissionTime is string
+        && data.submissionTime.size() <= 100;
+    }
+
+    match /registrations/{registrationId} {
+      // Allow reading member details for the Members Details / Admin page
+      allow read: if true;
+
+      // Allow creating a valid registration submission
+      allow create: if isValidId(registrationId) && isValidRegistration(incoming());
+
+      // Allow editing registration details from the Admin / Members details page
+      allow update: if isValidId(registrationId) && isValidRegistration(incoming());
+
+      // Allow deleting registration from the Admin / Members details page
+      allow delete: if isValidId(registrationId);
+    }
+
+    // Default deny all other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
