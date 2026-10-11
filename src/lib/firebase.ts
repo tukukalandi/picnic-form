@@ -1,5 +1,12 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { 
+  getAuth, 
+  GoogleAuthProvider, 
+  signInWithPopup, 
+  signOut, 
+  onAuthStateChanged, 
+  User 
+} from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
 
@@ -9,6 +16,25 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 // CRITICAL: The app will break without specifying the firestoreDatabaseId
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
+
+// Designated Administrator Email as specified by user
+export const ADMIN_EMAIL = 'tukukalandi@gmail.com';
+
+export async function signInAdminWithGoogle(): Promise<User> {
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: 'select_account' });
+  const result = await signInWithPopup(auth, provider);
+  return result.user;
+}
+
+export async function signOutAdmin(): Promise<void> {
+  await signOut(auth);
+}
+
+export function isUserAdmin(user: User | null): boolean {
+  if (!user || !user.email) return false;
+  return user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+}
 
 export enum OperationType {
   CREATE = 'create',
@@ -67,7 +93,6 @@ export async function testFirestoreConnection(): Promise<boolean> {
       console.warn('Firestore connection is offline.');
       return false;
     }
-    // Any permission-denied or doc-not-found means server answered
     return true;
   }
 }

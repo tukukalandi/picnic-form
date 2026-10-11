@@ -10,6 +10,17 @@ service cloud.firestore {
       return request.resource.data;
     }
 
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Only the authorized administrator (tukukalandi@gmail.com) can edit or delete applicant details
+    function isAdmin() {
+      return isSignedIn() 
+        && request.auth.token.email == 'tukukalandi@gmail.com'
+        && request.auth.token.email_verified == true;
+    }
+
     function isValidRegistration(data) {
       return data.keys().hasAll(['slNo', 'applicantName', 'gender', 'age', 'mobileNumber', 'totalPersons', 'submissionTime'])
         && data.applicantName is string 
@@ -27,17 +38,17 @@ service cloud.firestore {
     }
 
     match /registrations/{registrationId} {
-      // Allow reading member details for the Members Details / Admin page
+      // Allow viewing registered members
       allow read: if true;
 
-      // Allow creating a valid registration submission
+      // Postal agents can register their consent
       allow create: if isValidId(registrationId) && isValidRegistration(incoming());
 
-      // Allow editing registration details from the Admin / Members details page
-      allow update: if isValidId(registrationId) && isValidRegistration(incoming());
+      // ONLY the admin (tukukalandi@gmail.com) can edit registered applicant details
+      allow update: if isValidId(registrationId) && isValidRegistration(incoming()) && isAdmin();
 
-      // Allow deleting registration from the Admin / Members details page
-      allow delete: if isValidId(registrationId);
+      // ONLY the admin (tukukalandi@gmail.com) can delete registrations
+      allow delete: if isValidId(registrationId) && isAdmin();
     }
 
     // Default deny all other collections

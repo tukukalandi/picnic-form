@@ -1,6 +1,6 @@
 {
   "name": "Dhenkanal RS SO - Family Visit Consent Form",
-  "description": "Official consent and participant registration form for agents of Dhenkanal RS Sub Post Office with Google Sheets integration.",
+  "description": "Official consent and participant registration form for agents of Dhenkanal RS Sub Post Office for Family Visit on 06.12.2026 with Firebase database integration.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

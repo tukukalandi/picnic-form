@@ -1,23 +1,22 @@
-import React from 'react';
-import { Mail, Settings, BookOpen, ShieldCheck, CheckCircle2, AlertCircle, FileText, Users, Database } from 'lucide-react';
+import { Mail, ShieldCheck, FileText, Users, Lock, Unlock, Database, Calendar } from 'lucide-react';
+import { User } from 'firebase/auth';
+import { VISIT_DATE } from '../types';
 
 interface HeaderProps {
   activeTab: 'form' | 'members';
   onTabChange: (tab: 'form' | 'members') => void;
-  onOpenSettings: () => void;
-  onOpenGuide: () => void;
-  isLiveConfigured: boolean;
-  isMockMode: boolean;
+  onOpenAdminAuth: () => void;
+  isAdmin: boolean;
+  currentUser: User | null;
   memberCount?: number;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   activeTab,
   onTabChange,
-  onOpenSettings,
-  onOpenGuide,
-  isLiveConfigured,
-  isMockMode,
+  onOpenAdminAuth,
+  isAdmin,
+  currentUser,
   memberCount = 0,
 }) => {
   return (
@@ -31,9 +30,9 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
         <div className="flex items-center space-x-2 text-[10px] sm:text-xs">
           <span className="text-amber-100">Dhenkanal RS SO (759013)</span>
-          <div className="hidden sm:flex items-center gap-1 bg-red-950/70 px-2 py-0.5 rounded text-amber-300">
+          <div className="flex items-center gap-1 bg-red-950/70 px-2 py-0.5 rounded text-amber-300">
             <Database className="w-3 h-3 text-emerald-400" />
-            <span>Firebase Active</span>
+            <span>Firebase</span>
           </div>
         </div>
       </div>
@@ -44,10 +43,10 @@ export const Header: React.FC<HeaderProps> = ({
           
           <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
             {/* India Post Emblem */}
-            <div className="relative flex-shrink-0 w-11 h-11 sm:w-14 sm:h-14 bg-amber-400 rounded-xl p-1 shadow-sm flex items-center justify-center border-2 border-amber-200 text-red-900">
+            <div className="relative flex-shrink-0 w-11 h-11 sm:w-13 sm:h-13 bg-amber-400 rounded-xl p-1 shadow-sm flex items-center justify-center border-2 border-amber-200 text-red-900">
               <div className="w-full h-full border border-dashed border-red-800/60 rounded-lg flex flex-col items-center justify-center bg-gradient-to-br from-amber-300 to-amber-500">
-                <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-red-900 stroke-[2.2]" />
-                <span className="text-[7px] sm:text-[8px] font-black tracking-widest text-red-950 uppercase mt-0.5">INDIA POST</span>
+                <Mail className="w-5 h-5 text-red-900 stroke-[2.2]" />
+                <span className="text-[7px] font-black tracking-widest text-red-950 uppercase mt-0.5">INDIA POST</span>
               </div>
               <div className="absolute -bottom-1 -right-1 bg-red-700 text-white rounded-full p-0.5 shadow">
                 <ShieldCheck className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
@@ -63,26 +62,43 @@ export const Header: React.FC<HeaderProps> = ({
                 DHENKANAL RS SUB POST OFFICE
               </h1>
               <h2 className="text-[11px] sm:text-xs font-medium text-red-100 mt-0.5 truncate">
-                Family Visit – Official Registration Portal
+                Family Visit – Consent & Registration Portal
               </h2>
+              <div className="inline-flex items-center gap-1.5 bg-amber-400 text-red-950 px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] font-black shadow-2xs mt-1.5 border border-amber-300">
+                <Calendar className="w-3 h-3 text-red-900" />
+                <span>Date of Visit: {VISIT_DATE}</span>
+              </div>
             </div>
           </div>
 
-          {/* Settings & Guide Quick Buttons */}
-          <div className="flex items-center gap-1.5 flex-shrink-0">
+          {/* Admin Login / Auth Status Pill */}
+          <div className="flex items-center flex-shrink-0">
             <button
-              onClick={onOpenSettings}
-              className="p-2 bg-red-800/80 hover:bg-red-900 text-white rounded-xl transition-colors border border-red-600/60"
-              title="Settings & Google Sheet Link"
-              aria-label="Settings"
+              onClick={onOpenAdminAuth}
+              className={`px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer ${
+                isAdmin
+                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white ring-1 ring-emerald-300'
+                  : 'bg-red-800/80 hover:bg-red-900 text-red-100 border border-red-600/60'
+              }`}
+              title={isAdmin ? `Admin mode active (${currentUser?.email})` : 'Admin sign-in to edit/delete records'}
             >
-              <Settings className="w-4 h-4 text-amber-200" />
+              {isAdmin ? (
+                <>
+                  <Unlock className="w-3.5 h-3.5 text-amber-300" />
+                  <span className="hidden sm:inline">Admin Mode</span>
+                </>
+              ) : (
+                <>
+                  <Lock className="w-3.5 h-3.5 text-amber-200" />
+                  <span className="hidden sm:inline">Admin</span>
+                </>
+              )}
             </button>
           </div>
 
         </div>
 
-        {/* Primary Page Navigation Tabs - Full Width Mobile Friendly */}
+        {/* Primary Page Navigation Tabs */}
         <div className="mt-3 pt-2.5 border-t border-red-800/70 grid grid-cols-2 gap-2">
           <button
             type="button"

@@ -1,7 +1,6 @@
 import React from 'react';
-import { CheckCircle2, Printer, ExternalLink, RefreshCw, FileText, Stamp, Sparkles, Check } from 'lucide-react';
-import { SubmissionResult } from '../types';
-import { SPREADSHEET_URL } from '../data/backendCode';
+import { CheckCircle2, Printer, RefreshCw, Stamp, Check, Users, Calendar } from 'lucide-react';
+import { SubmissionResult, VISIT_DATE } from '../types';
 
 interface SuccessReceiptModalProps {
   isOpen: boolean;
@@ -48,25 +47,16 @@ export const SuccessReceiptModal: React.FC<SuccessReceiptModalProps> = ({
           </p>
 
           <div className="mt-4 inline-flex items-center gap-2 bg-white/15 px-4 py-1.5 rounded-full text-xs font-semibold backdrop-blur-xs border border-white/20">
-            {result.isMock ? (
-              <>
-                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                <span>Local Preview Mode (Connect Apps Script to persist)</span>
-              </>
-            ) : (
-              <>
-                <Check className="w-3.5 h-3.5 text-emerald-200" />
-                <span>Successfully Written to Google Spreadsheet!</span>
-              </>
-            )}
+            <Check className="w-3.5 h-3.5 text-emerald-200" />
+            <span>Saved in Firebase Database</span>
           </div>
         </div>
 
         {/* Official Printable Postal Receipt Slip */}
-        <div className="p-5 sm:p-6">
+        <div className="p-4 sm:p-6">
           <div 
             id="printable-receipt"
-            className="border-2 border-dashed border-red-300 rounded-xl p-5 bg-gradient-to-b from-stone-50 to-white relative overflow-hidden shadow-xs"
+            className="border-2 border-dashed border-red-300 rounded-xl p-4 sm:p-5 bg-gradient-to-b from-stone-50 to-white relative overflow-hidden shadow-xs"
           >
             {/* Postal Watermark stamp */}
             <div className="absolute right-3 top-3 opacity-15 pointer-events-none transform rotate-12 flex flex-col items-center border-2 border-red-800 rounded-full w-24 h-24 justify-center text-center p-1">
@@ -88,18 +78,22 @@ export const SuccessReceiptModal: React.FC<SuccessReceiptModalProps> = ({
               </p>
             </div>
 
-            {/* Serial Number Showcase */}
+            {/* Serial Number Showcase with Date of Visit */}
             <div className="bg-red-50 border border-red-200/80 rounded-lg p-3 mb-4 flex items-center justify-between">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-red-700 block">
                   Registered Serial Number
                 </span>
                 <span className="text-2xl sm:text-3xl font-black text-red-900 font-mono tracking-tight">
-                  Sl. No. {result.slNo}
+                  Sl. No. #{result.slNo}
                 </span>
               </div>
               <div className="text-right">
-                <span className="text-[10px] font-semibold text-stone-500 block">Date & Time</span>
+                <span className="inline-flex items-center gap-1 bg-amber-400 text-red-950 px-2 py-0.5 rounded text-[10px] font-extrabold mb-1">
+                  <Calendar className="w-3 h-3 text-red-900" />
+                  <span>Visit: {result.dateOfVisit || VISIT_DATE}</span>
+                </span>
+                <span className="text-[10px] font-semibold text-stone-500 block">Submission Time</span>
                 <span className="text-xs font-bold text-stone-700 block">{result.submissionTime}</span>
               </div>
             </div>
@@ -127,7 +121,7 @@ export const SuccessReceiptModal: React.FC<SuccessReceiptModalProps> = ({
               </div>
 
               <div className="p-2 bg-red-50/50 rounded border border-red-100 col-span-2">
-                <span className="text-red-700 font-semibold block text-[10px] uppercase">Total Persons</span>
+                <span className="text-red-700 font-semibold block text-[10px] uppercase">Total Headcount</span>
                 <span className="font-extrabold text-red-700 text-sm">
                   {result.totalPersons} {result.totalPersons === 1 ? 'Person' : 'Persons'}
                 </span>
@@ -161,33 +155,20 @@ export const SuccessReceiptModal: React.FC<SuccessReceiptModalProps> = ({
 
         {/* Action Buttons */}
         <div className="p-4 sm:p-5 bg-stone-50 border-t border-stone-200 flex flex-wrap items-center justify-between gap-2.5">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handlePrint}
-              className="px-3.5 py-2 text-xs font-bold text-stone-700 hover:text-stone-900 bg-white hover:bg-stone-100 border border-stone-300 rounded-lg transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer"
-            >
-              <Printer className="w-3.5 h-3.5" />
-              <span>Print Slip</span>
-            </button>
-
-            <a
-              href={SPREADSHEET_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-3.5 py-2 text-xs font-bold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors flex items-center gap-1.5 shadow-2xs"
-            >
-              <FileText className="w-3.5 h-3.5" />
-              <span>Verify in Google Sheet</span>
-              <ExternalLink className="w-3 h-3" />
-            </a>
-          </div>
+          <button
+            type="button"
+            onClick={handlePrint}
+            className="px-3.5 py-2.5 text-xs font-bold text-stone-700 hover:text-stone-900 bg-white hover:bg-stone-100 border border-stone-300 rounded-xl transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>Print Receipt Slip</span>
+          </button>
 
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={onResetForm}
-              className="px-3.5 py-2 text-xs font-bold text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-2.5 text-xs font-bold text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               <span>Submit Another</span>
@@ -200,9 +181,10 @@ export const SuccessReceiptModal: React.FC<SuccessReceiptModalProps> = ({
                   onClose();
                   onViewMembersList();
                 }}
-                className="px-4 py-2 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer"
+                className="px-4 py-2.5 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer"
               >
-                <span>View in Members Details</span>
+                <Users className="w-3.5 h-3.5" />
+                <span>View Members Details</span>
               </button>
             )}
           </div>

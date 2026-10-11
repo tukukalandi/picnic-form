@@ -1,5 +1,7 @@
 export type Gender = 'Male' | 'Female' | 'Other' | '';
 
+export const VISIT_DATE = '06.12.2026';
+
 export interface FamilyMember {
   id: string;
   name: string;
@@ -24,7 +26,7 @@ export interface SubmissionResult {
   familyMembers: string[];
   totalPersons: number;
   submissionTime: string;
-  sheetName?: string;
+  dateOfVisit?: string;
   firestoreId?: string;
   isMock?: boolean;
 }
@@ -44,6 +46,7 @@ export interface MemberRegistration {
   }>;
   totalPersons: number;
   submissionTime: string;
+  dateOfVisit?: string;
   createdAt?: string;
   updatedAt?: string;
 }
