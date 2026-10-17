@@ -12,7 +12,7 @@ import {
   Users, 
   ShieldAlert 
 } from 'lucide-react';
-import { MemberRegistration, Gender, FamilyMember } from '../types';
+import { MemberRegistration, Gender, FamilyMember, VISIT_DATE } from '../types';
 
 interface EditMemberModalProps {
   isOpen: boolean;
@@ -278,6 +278,22 @@ export const EditMemberModal: React.FC<EditMemberModalProps> = ({
                 {errors.mobileNumber && (
                   <p className="mt-1 text-xs text-red-600">{errors.mobileNumber}</p>
                 )}
+              </div>
+
+              {/* Date of Visit - Fixed Tour Date below Mobile Number */}
+              <div className="sm:col-span-12">
+                <label className="block text-xs font-bold text-stone-700 mb-1">
+                  Date of Visit (ଯାତ୍ରା ତାରିଖ)
+                </label>
+                <div className="flex items-center gap-2.5 p-2.5 bg-red-50/70 rounded-lg border border-red-200 text-xs">
+                  <div className="w-7 h-7 rounded-md bg-red-600 text-white flex items-center justify-center flex-shrink-0">
+                    <Calendar className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <span className="font-bold text-red-950 font-mono text-sm">{registration.dateOfVisit || VISIT_DATE}</span>
+                    <span className="text-stone-500 ml-1.5">• Sunday (Confirmed Schedule)</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
